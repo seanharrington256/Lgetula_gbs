@@ -6,16 +6,9 @@
 ### load up relevant packages
 library(adegenet)
 library(MASS)
-# library(vegan)
-# library(ape)
 library(fossil)
-# library(adespatial)
-# library(varhandle)
-# library(logisticPCA)
 library(raster)
-# library(caret)
-# library(LEA)
-# library(psych)
+library(psych)
 library(vcfR)
 library(dartR)
 library(rSDM)
@@ -56,8 +49,8 @@ for(species in assemblies_idb){   ### if we want to loop over all species, this 
   ###########################################################
   ## Set up paths to input files
   ###########################################################
-  path_ugeno<-paste0(main_dir,"/", species,".ugeno")
-  path_ustr<-paste0(main_dir,"/", species,".ustr")
+  # path_ugeno<-paste0(main_dir,"/", species,".ugeno")
+  # path_ustr<-paste0(main_dir,"/", species,".ustr")
   # path_usnps<-paste0(main_dir,"/", species,".usnps")
   path_vcf<-paste0(main_dir,"/", species,".vcf")
 

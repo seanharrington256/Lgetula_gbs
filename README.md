@@ -34,6 +34,20 @@ Directory `04_R_analyses` contains R scripts used to perform analyses.
 
 * `Lgetula_IBD.R` contains code to plot out kernel-density plots of geographic vs. genetic distance. Code to extract environmental data for each sample is also included at the end of this script. Environmental data are then fed into the following script to run GDM analyses.
 
-* `Lgetula_GDM.R` will run generalized dissimilarity analysis.
+* `Lgetula_GDM.R` will run generalized dissimilarity analysis on assemblies.
+
+
+## FastSimCoal2
+
+Directory `FSC2` contains scripts used to run FastSimCoal2 (FSC2) analyses.
+
+
+
+
+
+
+
+
+
 
 

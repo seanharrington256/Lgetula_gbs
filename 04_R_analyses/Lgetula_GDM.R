@@ -18,7 +18,7 @@ alt_data <- "all_coords_altitude.csv"
 bioclim <- "all_coords_current_bioclim.csv"
 envirem <- "all_coords_current_envirem.csv"
 
-## Read in environmental data (this was extracted from Bioclim variables in script "_IBD_IBE_2_plates.R")
+## Read in environmental data (this was extracted from Bioclim variables in script "Lgetula_IBD.R")
 all_alt<-read.csv(alt_data, stringsAsFactors = FALSE, row.names=1)
 all_cur_bioclim_only<-read.csv(bioclim, stringsAsFactors = FALSE, row.names=1)
 all_cur_envirem<-read.csv(envirem, stringsAsFactors = FALSE, row.names=1)
@@ -31,7 +31,7 @@ all_cur_bioclim<-cbind(all_cur_bioclim_only, all_cur_envirem) ## note that despi
 
 
 ## make a directory to put the output into
-gdm_out_dir<-paste0(main_dir, "/gdm_out")  # specify a full path to the directory
+gdm_out_dir<-paste0(main_dir, "/gdm_outTEST")  # specify a full path to the directory
 if(!dir.exists(gdm_out_dir)){ # check if the directory  exists and then only create it if it does not
   dir.create(gdm_out_dir)
 }
@@ -44,14 +44,11 @@ if(!dir.exists(gdm_out_dir)){ # check if the directory  exists and then only cre
 ######################################################################################################################
 ######################################################################################################################
 
-assemblies_gdm<-c(
+assemblies_gdm<-c(  # specify the assemblies that we want to loop over - this is set up that same as other scripts for this manuscript
    "Lgetula_p123_v2_25miss",
    "Lgetula_p123_v4_25miss",
    "Lgetula_p123_v5_WEST_25miss"
 )
-
-
-
 
 
 #####################################################################################################################
