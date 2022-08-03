@@ -46,25 +46,20 @@ Directory `05_FSC2` contains scripts used to run FastSimCoal2 (FSC2) analyses.
 This is complex to set up and run:
 
 
-* First step is to make the file that indicates which individual is in which population
+## First step is to make the file that indicates which individual is in which population
 
 
-This is done using the script: `Lgetula_make_pops_for_SFS.R`
-
-This requires that sNMF was already run on the samples to estimate population clustering depends on the way things are set up in the `Lgetula_pop_assignment.R` script and follows the same conventions, including requiring several of the files from that script.
+This is done using the script: `Lgetula_make_pops_for_SFS.R` This requires that sNMF was already run on the samples to estimate population clustering depends on the way things are set up in the `Lgetula_pop_assignment.R` script and follows the same conventions, including requiring several of the files from that script.
 
 This has to be run somewhat interactively, so that naming of different populations can be done in a way that makes sense and is interpretable. I've already done this, and the resulting `Lgetula_p123_v2_25missFSCpops_k3.txt` file is on Dryad.
 
 
 
-* Generate SFS
+## Generate SFS
 
 
-I then used Isaac Overcast's ultra-convenient `easySFS.py` script from here: [https://github.com/isaacovercast/easySFS](https://github.com/isaacovercast/easySFS).
-
-
-to determine how many alleles to project down (downsample to) to account for missing data
-in k=3 assembly run:
+I then used Isaac Overcast's ultra-convenient `easySFS.py` script from here: [https://github.com/isaacovercast/easySFS](https://github.com/isaacovercast/easySFS). To determine how many alleles to project down (downsample to) to account for missing data
+in k=3 assembly run, the first line below, the second is the projection I used:
 
 
 ```
@@ -72,32 +67,21 @@ in k=3 assembly run:
 	./easySFS.py -i Lgetula_p123_v2_25miss.vcf -p Lgetula_p123_v2_25missFSCpops_k3.txt --proj=48,14,10
 ```
 
-
 The file output from here is on Dryad as `curMK3_MSFS.obs`.
 
 # DRYAD LINK HERE AGAIN!!!!!
 
 
-* Fixing divergence time
+## Fixing divergence time
 
-For FSC2 parameter estimation from the folded SFS (as used here), mutation rate or divergence time needs to be fixed.
-
-
-Pyron & Burbrink 2009 (mtDNA) has root at 4.91 Ma, Chen et al. 2017 looks like ~3-4
-#####    use date from Burbrink & Gehara tree "Tree1\_Beast" & "Tree2\_Beast" from https://datadryad.org/stash/dataset/doi:10.5061/dryad.4qs50
-
-Tree1\_Beast = 4.33    Tree2\_Beast = 4.49 -> mean of these is 4.41
-
-FSC works in generation times, so assuming a generation time of 3 years, so root divergence time, in generations = 1470000 
+For FSC2 parameter estimation from the folded SFS (as used here), mutation rate or divergence time needs to be fixed. Pyron & Burbrink 2009 (mtDNA) has root at 4.91 Ma, Chen et al. 2017 looks like ~3-4. I used dates from Burbrink & Gehara tree "Tree1\_Beast" & "Tree2\_Beast" from https://datadryad.org/stash/dataset/doi:10.5061/dryad.4qs50. Tree1\_Beast = 4.33 and Tree2\_Beast = 4.49, the mean of these is 4.41. FSC works in generation times, so assuming a generation time of 3 years, so root divergence time, in generations = 1470000.
 
 
 ### Prepping and running FSC models for parameter estimation
 
 * Note that this is the way that I set this up to allow me to use some scripts that I've written to manipulate files--if I was building this from the ground up now, I'd probably do some things differently and more efficiently, but this works.
 
-1. Make the models
-
-Making the models and ensuring that they are specified correctly is the most tedious part of this. Fortunately, I've done this already, so if you want to replicate exactly what I did, just look in the `Models` subdirectory within `05_FSC2` to see the FSC2 `.est` and `.tpl` files that I used. If you want to do this with your own data, you'll unfortunately have to make these files yourself manually--feel free to contact me for help, and I'm happy to give input as I'm able.
+1. Make the models. Making the models and ensuring that they are specified correctly is the most tedious part of this. Fortunately, I've done this already, so if you want to replicate exactly what I did, just look in the `Models` subdirectory within `05_FSC2` to see the FSC2 `.est` and `.tpl` files that I used. If you want to do this with your own data, you'll unfortunately have to make these files yourself manually--feel free to contact me for help, and I'm happy to give input as I'm able.
 
 2. Get the linux executable for FSC: http://cmpg.unibe.ch/software/fastsimcoal2/ (for running this on a Linux cluster, as I did).
 
