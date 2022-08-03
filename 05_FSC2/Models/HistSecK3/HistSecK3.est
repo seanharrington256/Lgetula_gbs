@@ -1,0 +1,36 @@
+// Priors and rules file
+// *********************
+
+[PARAMETERS]
+//#isInt? #name   #dist.#min  #max
+//all N are in number of haploid individuals
+1  NPOP0$       unif     100  100000   output
+1  NPOP1$       unif     100  100000   output
+1  NPOP2$       unif     100  100000   output
+1  NPOP12anc$   unif     100  100000   output
+1  NPOProotanc$   unif     100  100000   output
+1  TCONT2$        unif     100   200000   output
+1  TDIV_1_MINUS$   unif     10   200000   hide
+1  TCONT1_MINUS$        unif     10   200000   hide
+0  N0M20$            logunif  1e-2 20  hide
+0  N2M02$            logunif  1e-2 20  hide
+0  N1M21$            logunif  1e-2 20  hide
+0  N2M12$            logunif  1e-2 20  hide
+0  N0M120            logunif  1e-2 20  hide
+0  N12M012            logunif  1e-2 20  hide
+0  MUTRATE$            unif    1e-8 1e-10 output
+
+[RULES]
+TCONT2$ < 1470000
+
+[COMPLEX PARAMETERS]
+1 TDIV1$ =  TCONT2$ - TDIV_1_MINUS$ output
+1 TCONT1$ = TDIV1$ - TCONT1_MINUS$ output
+0 RESIZE_1$ = NPOP12anc$/NPOP2$ hide
+0 RESIZE_2$ = NPOProotanc$/NPOP0$ hide
+0 MIG02$ = N0M20$/NPOP0$ output
+0 MIG20$ = N2M02$/NPOP2$ output
+0 MIG12$ = N1M21$/NPOP1$ output
+0 MIG21$ = N2M12$/NPOP2$ output
+0 MIG012$ = N0M120$/NPOP0$ output
+0 MIG120$ = N12M012$/NPOP12anc$ output

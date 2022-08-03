@@ -1,0 +1,20 @@
+// Priors and rules file
+// *********************
+
+[PARAMETERS]
+//#isInt? #name   #dist.#min  #max
+//all N are in number of haploid individuals
+1  NPOP0$       unif     100  100000   output
+1  NPOP1$       unif     100  100000   output
+1  NPOP2$       unif     100  100000   output
+1  NPOP12anc$   unif     100  100000   output
+1  NPOProotanc$   unif     100  100000   output
+1  TDIV1$        unif     100   200000   output
+0  MUTRATE$            unif    1e-8 1e-10 output
+
+[RULES]
+TDIV1$  < 1470000
+
+[COMPLEX PARAMETERS]
+0 RESIZE_1$ = NPOP12anc$/NPOP2$ hide
+0 RESIZE_2$ = NPOProotanc$/NPOP0$ hide
