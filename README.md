@@ -79,7 +79,7 @@ The file output from here is on Dryad as `curMK3_MSFS.obs`.
 For FSC2 parameter estimation from the folded SFS (as used here), mutation rate or divergence time needs to be fixed. Pyron & Burbrink 2009 (mtDNA) has root at 4.91 Ma, Chen et al. 2017 looks like ~3-4. I used dates from Burbrink & Gehara tree "Tree1\_Beast" & "Tree2\_Beast" from https://datadryad.org/stash/dataset/doi:10.5061/dryad.4qs50. Tree1\_Beast = 4.33 and Tree2\_Beast = 4.49, the mean of these is 4.41. FSC works in generation times, so assuming a generation time of 3 years, so root divergence time, in generations = 1470000.
 
 
-### Prepping and running FSC models for parameter estimation
+## Prepping and running FSC models for parameter estimation
 
 * Note that this is the way that I set this up to allow me to use some scripts that I've written to manipulate files--if I was building this from the ground up now, I'd probably do some things differently and more efficiently, but this works.
 
