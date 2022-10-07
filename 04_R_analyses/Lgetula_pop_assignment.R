@@ -11,6 +11,9 @@ library(LEA)
 library(plotrix)
 library(mapdata)
 library(rworldmap)
+library(ggplot2)
+library(scatterpie)
+
 
 
 ## Set up an object to contain the path to the main directory where the data are and then set that as the working directory
@@ -32,8 +35,32 @@ setwd(main_dir)
 
 
 
-all_assemblies<-c( "Lgetula_p123_v2_25miss", "Lgetula_p123_v4_25miss", "Lgetula_p123_v5_WEST_25miss")
+all_assemblies<-c("Lgetula_p123_v2_25miss", "Lgetula_p123_v4_25miss", "Lgetula_p123_v5_WEST_25miss")
 
+
+
+#### Some overall setup for mapping and plotting
+
+## Get out the data for states and for Mexico and then combine them together
+states <- map_data("state") # US states data
+mex <- map_data("worldHires", "Mexico") # Mexico data
+mex$group <- mex$group + length(states$group) # have to do this to get rid of weird lines that show up otherwise because of groups in Mexico already being group numbers in states
+to_map <- rbind(states, mex) # combine these together
+to_map <- dplyr::filter(to_map, lat > 23) # drop off souther coordinates that we don't need, only need northern Mexico
+
+# make a list of colors:
+colors_6<-c("V1" = "red", "V2" = "blue", "V3" = "white", "V4" = "purple", "V5" = "pink", "V6" = "yellow")
+
+## Read in coordinates for plotting farther down
+setwd(main_dir)
+coords<-read.csv("all_coords_requested.csv", header=TRUE, row.names=NULL) # coordinates of everything I sequenced and many I didn't
+
+
+## make a directory to put the output plots into if it doesn't already exist
+sNMF_out_dir<-paste0(main_dir, "/Pop_structr_out")  # specify a full path to the directory
+if(!dir.exists(sNMF_out_dir)){ # check if the directory  exists and then only create it if it does not
+  dir.create(sNMF_out_dir)
+}
 
   
 ######################################################################################################################
@@ -43,22 +70,11 @@ for(species in all_assemblies){
   ###########################################################
   ## Set up paths to input files
   ###########################################################
+  setwd(main_dir)
     path_ugeno<-paste0(main_dir,"/", species,".ugeno")
     path_ustr<-paste0(main_dir,"/", species,".ustr")
-    # path_usnps<-paste0(main_dir,"/", species,".usnps")
+
   
-  
-  ### Set up some colors for plotting farther down
-  colors_2<-c("red", "blue") # colors for plotting 2 populations
-  colors_3<-c("red", "blue", "white") # colors for plotting 3 populations
-  colors_4<-c("red", "blue", "purple", "green") # colors for plotting 4 populations
-  colors_5<-c("red", "blue", "purple", "green", "pink") # colors for plotting 5 populations
-  colors_6<-c("red", "blue", "purple", "green", "pink", "yellow") # colors for plotting 6 populations
-  colors_7<-c("red", "blue", "purple", "green", "pink", "yellow", "cadetblue2") # colors for plotting 7 populations
-  
-  ## Read in coordinates for plotting farther down
-  setwd(main_dir)
-  coords<-read.csv("all_coords_requested.csv", header=TRUE, row.names=NULL) # coordinates of everything I sequenced and many I didn't
   # read in the geno file to get the number of individuals and snps for this assembly
   geno_txt<-readLines(path_ugeno)
   nums_snps<-length(geno_txt)
@@ -117,11 +133,6 @@ for(species in all_assemblies){
                    project = "new", tolerance = 0.00001, iterations = 500)
   }
   
-  ## make a directory to put the output plots into if it doesn't already exist
-  sNMF_out_dir<-paste0(main_dir, "/Pop_structr_out")  # specify a full path to the directory
-  if(!dir.exists(sNMF_out_dir)){ # check if the directory  exists and then only create it if it does not
-    dir.create(sNMF_out_dir)
-  }
   setwd(sNMF_out_dir)
   
   # make pdf of cross-entropy plot
@@ -147,7 +158,7 @@ for(species in all_assemblies){
   #### use a loop to plot various different k values 
   for(i in k_plot){
     # confirm cross entropy values for K are consist. across runs
-    ce <- cross.entropy(obj.at, K = i) 
+    ce <- cross.entropy(obj.at, K = i)
     ce # pretty similar
     best.run <- which.min(ce) # find the run with the lowest cross validation error
     
@@ -155,87 +166,56 @@ for(species in all_assemblies){
     qmatrix <- Q(obj.at, K = i, run = best.run)
     admix<-as.data.frame(qmatrix)
     
+    # get the coordinate and admix data into a single dataframe
+    for_pies <- cbind(snmf_coords, admix)
+    
+    # Get the right number of colors
+    colors <- colors_6[1:ncol(admix)]
+    
+
     ## Run a DAPC, too
     npcs<-num_ind-1  ## use max number of pcs, number of individuals-1
     ndas<-i-1  ## use max number of discriminant axes, which is k-1 (k is contained in i in this loop)
     grp_loop <- find.clusters(DAPC_ustr, n.pca=npcs, n.clust=i)## get groups
     dapc_loop <- dapc(DAPC_ustr, grp_loop$grp, n.pca=npcs, n.da=ndas)# run DAPC
     
+    # combine with coords
+    colnames(dapc_loop$posterior) <- paste0("V", colnames(dapc_loop$posterior)) # so that this matches sNMF admix columns
+    for_pies_dapc <- cbind(snmf_coords, dapc_loop$posterior)
+    
     ## plot it out
     pdf(file=paste0(species,"_SNMF_DAPC_K",i,".pdf"), width=6, height=5)
     #### Start with plotting snmf to map
-    map("worldHires", "Mexico", xlim=c(-125,-65), ylim=c(23,53),col="gray90", fill=TRUE)
-    map("state", xlim=c(-125,-65), ylim=c(23,53), add=TRUE,col="gray90", fill=TRUE)
-    # map("worldHires", "usa", xlim=c(-125,-65), ylim=c(23,53), add=TRUE,col="gray90", fill=TRUE) # swapped this out for the above line to get state boundaries
-    text(x=-95, y=51, labels=paste0(species, " SNMF K=", i), cex=0.6)
-    ###Plot out the pies, with parameters set up depending on what k is
-    if(i==2){
-      for (x in 1:nrow(snmf_coords)) {floating.pie(snmf_coords$lon[x],snmf_coords$lat[x], # plot the pies
-                                                   c(admix$V1[x],admix$V2[x]), radius=0.6,
-                                                   col=colors_2) }
-    }
-    if(i==3){
-      for (x in 1:nrow(snmf_coords)) {floating.pie(snmf_coords$lon[x],snmf_coords$lat[x], # plot the pies
-                                                   c(admix$V1[x],admix$V2[x], admix$V3[x]), radius=0.6,
-                                                   col=colors_3) }
-    }
-    if(i==4){
-      for (x in 1:nrow(snmf_coords)) {floating.pie(snmf_coords$lon[x],snmf_coords$lat[x], # plot the pies
-                                                   c(admix$V1[x],admix$V2[x], admix$V3[x], admix$V4[x]), radius=0.6,
-                                                   col=colors_4) }
-    }
-    if(i==5){
-      for (x in 1:nrow(snmf_coords)) {floating.pie(snmf_coords$lon[x],snmf_coords$lat[x], # plot the pies
-                                                   c(admix$V1[x],admix$V2[x], admix$V3[x], admix$V4[x], admix$V5[x]), radius=0.6,
-                                                   col=colors_5) }
-    }
-    if(i==6){
-      for (x in 1:nrow(snmf_coords)) {floating.pie(snmf_coords$lon[x],snmf_coords$lat[x], # plot the pies
-                                                   c(admix$V1[x],admix$V2[x], admix$V3[x], admix$V4[x], admix$V5[x], admix$V6[x]), radius=0.6,
-                                                   col=colors_6) }
-    }
-    if(i==7){
-      for (x in 1:nrow(snmf_coords)) {floating.pie(snmf_coords$lon[x],snmf_coords$lat[x], # plot the pies
-                                                   c(admix$V1[x],admix$V2[x], admix$V3[x], admix$V4[x], admix$V5[x], admix$V6[x], admix$V7[x]), radius=0.6,
-                                                   col=colors_7) }
-    }
+    snmf_plot <- ggplot(to_map, aes(long, lat, group = group)) + # map out the US & Mexico
+      geom_polygon(data = to_map, fill = "grey90", color = "black", size = 0.2) + # make them polygons
+      geom_scatterpie(data = for_pies, aes(x=lon, y=lat, group = number, r = 0.6), cols = grep("^V", colnames(for_pies), value = TRUE), size = 0.1) + # plot the pies - use grep to get the column names that start with V, these are the admix proportions
+      scale_fill_manual(values = colors) +
+      guides(fill="none") + # get rid of the legend for admixture
+      theme_minimal() +
+      labs(title=paste0(species, " SNMF K=", i), x ="Longitude", y = "Latitude") +
+      coord_map("moll") # Mollweide projection
+    print(snmf_plot)
+    
+    
     ## plot out DAPC to map for same k
-    map("worldHires", "Mexico", xlim=c(-125,-65), ylim=c(23,53),col="gray90", fill=TRUE)
-    map("state", xlim=c(-125,-65), ylim=c(23,53), add=TRUE,col="gray90", fill=TRUE)
-    text(x=-95, y=51, labels=paste0(species, " DAPC K=", i), cex=0.6)
-    if(i==2){
-      for (x in 1:nrow(snmf_coords)) {floating.pie(snmf_coords$lon[x],snmf_coords$lat[x], # plot the pies
-                                                   c(dapc_loop$posterior[x,1], dapc_loop$posterior[x,2]), radius=0.6,
-                                                   col=colors_2)}
-    }
-    if(i==3){
-      for (x in 1:nrow(snmf_coords)) {floating.pie(snmf_coords$lon[x],snmf_coords$lat[x], # plot the pies
-                                                   c(dapc_loop$posterior[x,1], dapc_loop$posterior[x,2], dapc_loop$posterior[x,3]), radius=0.6,
-                                                   col=colors_3)}
-    }
-    if(i==4){
-      for (x in 1:nrow(snmf_coords)) {floating.pie(snmf_coords$lon[x],snmf_coords$lat[x], # plot the pies
-                                                   c(dapc_loop$posterior[x,1], dapc_loop$posterior[x,2], dapc_loop$posterior[x,3], dapc_loop$posterior[x,4]), radius=0.6,
-                                                   col=colors_4)}
-    }
-    if(i==5){
-      for (x in 1:nrow(snmf_coords)) {floating.pie(snmf_coords$lon[x],snmf_coords$lat[x], # plot the pies
-                                                   c(dapc_loop$posterior[x,1], dapc_loop$posterior[x,2], dapc_loop$posterior[x,3], dapc_loop$posterior[x,4], dapc_loop$posterior[x,5]), radius=0.6,
-                                                   col=colors_5)}
-    }
-    if(i==6){
-      for (x in 1:nrow(snmf_coords)) {floating.pie(snmf_coords$lon[x],snmf_coords$lat[x], # plot the pies
-                                                   c(dapc_loop$posterior[x,1], dapc_loop$posterior[x,2], dapc_loop$posterior[x,3], dapc_loop$posterior[x,4], dapc_loop$posterior[x,5], dapc_loop$posterior[x,6]), radius=0.6,
-                                                   col=colors_6)}
-    }
-    if(i==7){
-      for (x in 1:nrow(snmf_coords)) {floating.pie(snmf_coords$lon[x],snmf_coords$lat[x], # plot the pies
-                                                   c(dapc_loop$posterior[x,1], dapc_loop$posterior[x,2], dapc_loop$posterior[x,3], dapc_loop$posterior[x,4], dapc_loop$posterior[x,5], dapc_loop$posterior[x,6], dapc_loop$posterior[x,7]), radius=0.6,
-                                                   col=colors_7)}
-    }
+    dapc_plot <- ggplot(to_map, aes(long, lat, group = group)) + # map out the US & Mexico
+      geom_polygon(data = to_map, fill = "grey90", color = "black", size = 0.2) + # make them polygons
+      geom_scatterpie(data = for_pies_dapc, aes(x=lon, y=lat, group = number, r = 0.6), cols = grep("^V", colnames(for_pies_dapc), value = TRUE), size = 0.1) + # plot the pies - use grep to get the column names that start with V, these are the admix proportions
+      scale_fill_manual(values = colors) +
+      guides(fill="none") + # get rid of the legend for admixture
+      theme_minimal() +
+      labs(title=paste0(species, " DAPC K=", i), x ="Longitude", y = "Latitude") +
+      coord_map("moll") # Mollweide projection
+    print(dapc_plot)
     dev.off()
   }
 }
+
+
+
+
+
+
 
 
 
