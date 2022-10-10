@@ -153,7 +153,7 @@ for(species in assemblies_gdm){   ### loop over all assemblies
   setwd(gdm_out_dir)
   
   length(gdm.1$predictors) # get idea of number of panels
-  pdf(file=paste0(species, "_gdm_splines.pdf"), width=13, height=20)
+  pdf(file=paste0(species, "_gdm_splines_TEST.pdf"), width=13, height=20)
   plot(gdm.1, plot.layout=c(4,3))
   title(paste0(species, "\nGDM var explained", gdm.1$explained))
   dev.off()
@@ -166,7 +166,7 @@ for(species in assemblies_gdm){   ### loop over all assemblies
   write.csv(modTest_b[[2]], paste0(species, "_GDM_var_imp.csv"))
   write.csv(modTest_b[[3]], paste0(species, "_GDM_var_sig.csv"))
 
-  pdf(file=paste0(species, "_GDM_var_imp.pdf"), width=6, height=6)
+  pdf(file=paste0(species, "_GDM_var_imp_TEST.pdf"), width=6, height=6)
   par(mar=c(10,4,4,4))
   barplot(modTest_b[[2]][,1],main = paste0(species, "\nGDM full model var importance"), las=2)
   dev.off()
