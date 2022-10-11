@@ -278,7 +278,7 @@ tests_4 <- tests_3
 tests_4$Time <- tests_4$Time/1000000
 
 setwd(plots_out_dir)
-pdf(file="getula_FSCboot_times.pdf", width=5.5, height=5)
+pdf(file="getula_FSCboot_times.pdf", width=5.5, height=3)
 ggplot(times_ma, aes(x=Event, y=Time)) + 
   geom_violin(trim=FALSE, fill="lightblue") +
   geom_point(data = tests_4, aes(x = Event, y = Time), size = 3, shape = 23, fill = "black") + 
@@ -310,17 +310,17 @@ ggplot(migs, aes(x=Rate, y=IndperGen)) +
 ggplot(migs, aes(x=Rate, y=IndperGen)) + 
   geom_violin(trim=FALSE, fill="green") +
   theme_minimal() +
-  ylim(0,30)
+  ylim(0,15)
 
 
 ############################################################
 ### add in the best estimates - VIOLIN PLOT
-pdf(file="getula_FSCboot_mig.pdf", width = 5.5, height = 5)
+pdf(file="getula_FSCboot_mig.pdf", width = 5.5, height = 3)
 ggplot(migs, aes(x=Rate, y=IndperGen)) + 
   geom_violin(trim=FALSE, fill="green") +
   # ylim(0,30) +
   geom_point(data = mests_3, aes(x = Rate, y = IndperGen), size = 3, shape = 23, fill = "black") +
-  scale_y_continuous(breaks = seq(0, 30, by = 5), minor_breaks = seq(0 , 30, 1), limits = c(0,30)) +
+  scale_y_continuous(breaks = seq(0, 15, by = 5), minor_breaks = seq(0 , 15, 1), limits = c(0, 15)) +
   ylab("Individuals per generation") +
   xlab(NULL) +
   theme_minimal()
@@ -366,7 +366,7 @@ popsizes_thou$Individuals <- popsizes_thou$Individuals/1000
 pests_4 <- pests_3
 pests_4$Individuals <- pests_4$Individuals/1000
 
-pdf(file="getula_FSCboot_pop.pdf", width = 5.5, height = 5)
+pdf(file="getula_FSCboot_pop.pdf", width = 5.5, height = 3)
 ggplot(popsizes_thou, aes(x=Population, y=Individuals)) + 
   geom_violin(trim=FALSE, fill="pink") +
   geom_point(data = pests_4, aes(x = Population, y = Individuals), size = 3, shape = 23, fill = "black") +
