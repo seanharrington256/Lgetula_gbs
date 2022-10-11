@@ -1,4 +1,4 @@
-## Complex cycles of divergence and migration shape population structure in the common kingsnake species complex
+## Complex cycles of divergence and migration shape lineage structure in the common kingsnake species complex
 
 ### Harrington and Burbrink
 
@@ -6,7 +6,7 @@
 
 ## IN REVIEW
 
-This repo contains contains code used for analyses in the manuscript "Complex cycles of divergence and migration shape population structure in the common kingsnake species complex"
+This repo contains contains code used for analyses in the manuscript "Complex cycles of divergence and migration shape lineage structure in the common kingsnake species complex"
 
 Raw sequence data are available from the NCBI Sequence Read Archive. 
 
