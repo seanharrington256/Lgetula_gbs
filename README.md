@@ -4,17 +4,14 @@
 
 ![](getula_ms_git_image.png)
 
-## IN REVIEW
 
 This repo contains contains code used for analyses in the manuscript "Complex cycles of divergence and migration shape lineage structure in the common kingsnake species complex"
 
-Raw sequence data are available from the NCBI Sequence Read Archive. 
+Raw sequence data are available from the NCBI Sequence Read Archive under BioProject ID PRJNA889851.
 
-# OR THEY WILL BE, ONCE I UPLOAD THEM
+Note that these data are demultiplexed data for each sample. Our full set of raw data included samples from other snake species for different projects in addition to the samples used here. We have included the scripts and parameter files that we used to demultiplex the data for the sake of completeness and transparency, but note that you will not be able to replicate these initial steps. Instead, you can start after demultiplexing using out demultiplexed files if you'd like.
 
-Note that these data are demultiplexed data for each sample. Our full set of raw data included samples from other snake species for different projects in addition to the samples used here. We have included the scripts and parameter files that we used to demultiplex the data for the sake of completeness and transparency, but note that you will not be able to replicate these initial steps.
-
-# Alignments will be added to Dryad
+* All processed data files (e.g, output from ipyrad, downloaded bioclim data) are available on Dryad at [https://doi.org/10.5061/dryad.18931zd16](https://doi.org/10.5061/dryad.18931zd16).
 
 
 ## ipyrad data processing
@@ -41,7 +38,7 @@ Directory `04_R_analyses` contains R scripts used to perform analyses.
 
 
 
-## FastSimCoal2
+# FastSimCoal2
 
 Directory `05_FSC2` contains scripts used to run FastSimCoal2 (FSC2) analyses.
 
@@ -70,8 +67,6 @@ in k=3 assembly run, the first line below, the second is the projection I used:
 ```
 
 The file output from here is on Dryad as `curMK3_MSFS.obs`.
-
-# DRYAD LINK HERE AGAIN!!!!!
 
 
 ## Fixing divergence time
